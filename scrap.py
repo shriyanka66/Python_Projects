@@ -2,10 +2,9 @@ import requests
 from bs4 import BeautifulSoup as bs
 import pprint
 
-response = requests.get('https://news.ycombinator.com/news')
-bs1 = bs(response.text, 'html.parser')
-links = bs1.select('.storylink')
-stext = bs1.select('.subtext')
+
+def sort_hnlist(hlist):
+    return sorted(hlist, key = lambda k : k['votes'], reverse=True)
 
 
 def hacker_list(links, stext):
@@ -18,7 +17,20 @@ def hacker_list(links, stext):
             points = int(votes[0].getText().replace(' points', ''))
             if points > 99:
                 hl.append({'title': title, 'link': reference, 'votes': points})
-    return hl
+    return sort_hnlist(hl)
 
-pprint.pprint(hacker_list(links,stext))
+
+for i in range(2,17):
+    response = requests.get(f'https://news.ycombinator.com/news?p={i}')
+    bs1 = bs(response.text, 'html.parser')
+    links = bs1.select('.storylink')
+    stext = bs1.select('.subtext')
+    pprint.pprint(print(f'Following articles are found on page: {i}', hacker_list(links, stext)))
+
+
+
+
+
+
+
 
